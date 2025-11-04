@@ -85,6 +85,9 @@
       border: none;
       border-top: 1px solid #4443;
     }
+    .tab-group {
+      margin-bottom: 1.5rem;
+    }
   </style>
 </head>
 <body>
@@ -97,14 +100,14 @@
 
     <h2>1. 🔑 Authentication</h2>
     <p>Use your <strong>Client ID</strong> and <strong>Client Secret</strong> to obtain an access token.</p>
-
-    <div class="tabs">
-      <div class="tab active" onclick="showTab(this, 'auth-curl')">curl</div>
-      <div class="tab" onclick="showTab(this, 'auth-python')">Python</div>
-    </div>
-
-    <div id="auth-curl" class="code-block">
-      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">export CLIENT_ID="your_client_id"
+    
+    <div class="tab-group">
+      <div class="tabs">
+        <div class="tab active" data-target="auth-curl">curl</div>
+        <div class="tab" data-target="auth-python">Python</div>
+      </div>
+      <div id="auth-curl" class="code-block">
+        <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">export CLIENT_ID="your_client_id"
 export CLIENT_SECRET="your_client_secret"
 
 ACCESS_TOKEN=$(curl -s -X POST https://chemed-dev.rdanoteworthy.com/api/v1/auth/token \
@@ -113,10 +116,10 @@ ACCESS_TOKEN=$(curl -s -X POST https://chemed-dev.rdanoteworthy.com/api/v1/auth/
   -d "grant_type=client_credentials" | jq -r '.access_token')
 
 echo "Access Token: $ACCESS_TOKEN"</code></pre>
-    </div>
+      </div>
 
-    <div id="auth-python" class="code-block" style="display:none;">
-      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import base64
+      <div id="auth-python" class="code-block" style="display:none;">
+        <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import base64
 import requests
 
 CLIENT_ID = "your_client_id"
@@ -136,6 +139,7 @@ response = requests.post(
 data = response.json()
 ACCESS_TOKEN = data["access_token"]
 print("Access Token:", ACCESS_TOKEN)</code></pre>
+      </div>
     </div>
 
     <hr />
@@ -143,21 +147,22 @@ print("Access Token:", ACCESS_TOKEN)</code></pre>
     <h2>2. 📤 Submit a Feed</h2>
     <p>Once you have an access token, submit a text file feed for processing.</p>
 
-    <div class="tabs">
-      <div class="tab active" onclick="showTab(this, 'submit-curl')">curl</div>
-      <div class="tab" onclick="showTab(this, 'submit-python')">Python</div>
-    </div>
+    <div class="tab-group">
+      <div class="tabs">
+        <div class="tab active" data-target="submit-curl">curl</div>
+        <div class="tab" data-target="submit-python">Python</div>
+      </div>
 
-    <div id="submit-curl" class="code-block">
-      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X POST \
+      <div id="submit-curl" class="code-block">
+        <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X POST \
   "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/notes/submit" \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@notes.csv;type=text/csv"</code></pre>
-    </div>
+      </div>
 
-    <div id="submit-python" class="code-block" style="display:none;">
-      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
+      <div id="submit-python" class="code-block" style="display:none;">
+        <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
 
 files = {"file": ("notes.txt", open("notes.csv", "rb"), "text/csv")}
 
@@ -168,6 +173,7 @@ response = requests.post(
 )
 
 print(response.status_code, response.text)</code></pre>
+      </div>
     </div>
 
     <hr />
@@ -175,19 +181,20 @@ print(response.status_code, response.text)</code></pre>
     <h2>3. 📅 Retrieve Results</h2>
     <p>Fetch results for a specific date using the <code>/note-reviews/updates/{date_id}</code> endpoint.</p>
 
-    <div class="tabs">
-      <div class="tab active" onclick="showTab(this, 'results-curl')">curl</div>
-      <div class="tab" onclick="showTab(this, 'results-python')">Python</div>
-    </div>
+    <div class="tab-group">
+      <div class="tabs">
+        <div class="tab active" data-target="results-curl">curl</div>
+        <div class="tab" data-target="results-python">Python</div>
+      </div>
 
-    <div id="results-curl" class="code-block">
-      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X GET \
+      <div id="results-curl" class="code-block">
+        <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X GET \
 "https://chemed-dev.rdanoteworthy.com/api/v1/note-reviews/updates/25" \
   -H "Authorization: Bearer $ACCESS_TOKEN"</code></pre>
-    </div>
+      </div>
 
-    <div id="results-python" class="code-block" style="display:none;">
-      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
+      <div id="results-python" class="code-block" style="display:none;">
+        <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
 
 ACCESS_TOKEN = "your_access_token_here"
 
@@ -198,6 +205,7 @@ response = requests.get(
 
 print(response.status_code)
 print(response.json())</code></pre>
+      </div>
     </div>
 
     <hr />
@@ -211,21 +219,26 @@ print(response.json())</code></pre>
   </div>
 
   <script>
-    function showTab(tab, id) {
-      const parent = tab.parentElement.nextElementSibling.parentElement;
-      const allTabs = parent.querySelectorAll('.tab');
-      const allBlocks = parent.querySelectorAll('.code-block');
-      allTabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      allBlocks.forEach(b => b.style.display = 'none');
-      document.getElementById(id).style.display = 'block';
-    }
+    document.querySelectorAll(".tab-group").forEach(group => {
+      const tabs = group.querySelectorAll(".tab");
+      const blocks = group.querySelectorAll(".code-block");
+
+      tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          tabs.forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          blocks.forEach(b => (b.style.display = "none"));
+          const target = tab.getAttribute("data-target");
+          group.querySelector("#" + target).style.display = "block";
+        });
+      });
+    });
 
     function copyCode(btn) {
       const code = btn.nextElementSibling.innerText;
       navigator.clipboard.writeText(code);
       btn.textContent = "Copied!";
-      setTimeout(() => btn.textContent = "Copy", 1500);
+      setTimeout(() => (btn.textContent = "Copy"), 1500);
     }
 
     function toggleTheme() {
