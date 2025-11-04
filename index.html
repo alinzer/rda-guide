@@ -164,7 +164,7 @@ print("Access Token:", ACCESS_TOKEN)</code></pre>
       <div id="submit-python" class="code-block" style="display:none;">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
 
-files = {"file": ("notes.txt", open("notes.csv", "rb"), "text/csv")}
+files = {"file": ("notes.csv", open("notes.csv", "rb"), "text/csv")}
 
 response = requests.post(
     "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/notes/submit",
@@ -196,15 +196,13 @@ print(response.status_code, response.text)</code></pre>
       <div id="results-python" class="code-block" style="display:none;">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
 
-ACCESS_TOKEN = "your_access_token_here"
-
 response = requests.get(
     "https://chemed-dev.rdanoteworthy.com/api/v1/note-reviews/updates/25",
     headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
 )
 
 print(response.status_code)
-print(response.json())</code></pre>
+print(response.text)</code></pre>
       </div>
     </div>
 
