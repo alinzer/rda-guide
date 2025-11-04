@@ -166,18 +166,22 @@
       <div id="auth-curl" class="code-block">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">export CLIENT_ID="your_client_id"
 export CLIENT_SECRET="your_client_secret"
+
 ACCESS_TOKEN=$(curl -s -X POST https://chemed-dev.rdanoteworthy.com/api/v1/auth/token \
   -H "Authorization: Basic $(echo -n $CLIENT_ID:$CLIENT_SECRET | base64)" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=client_credentials" | jq -r '.access_token')
+  
 echo "Access Token: $ACCESS_TOKEN"</code></pre>
       </div>
       <div id="auth-python" class="code-block" style="display:none;">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import base64
 import requests
+
 CLIENT_ID = "your_client_id"
 CLIENT_SECRET = "your_client_secret"
 auth_header = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
+
 response = requests.post(
     "https://chemed-dev.rdanoteworthy.com/api/v1/auth/token",
     headers={
@@ -204,20 +208,21 @@ print("Access Token:", ACCESS_TOKEN)</code></pre>
       </div>
       <div id="submit-curl" class="code-block">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X POST \
-      "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/{cobdate}/{feed}/submit" \
-      -H "Authorization: Bearer $ACCESS_TOKEN" \
-      -H "Content-Type: multipart/form-data" \
-      -F "file=@notes.csv;type=text/csv"</code></pre>
+  "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/{cobdate}/{feed}/submit" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@notes.csv;type=text/csv"</code></pre>
       </div>
       <div id="submit-python" class="code-block" style="display:none;">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
-    files = {"file": ("notes.csv", open("notes.csv", "rb"), "text/csv")}
-    response = requests.post(
-        "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/{cobdate}/{feed}/submit",
-        headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
-        files=files,
-    )
-    print(response.status_code, response.text)</code></pre>
+        
+files = {"file": ("notes.csv", open("notes.csv", "rb"), "text/csv")}
+response = requests.post(
+    "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/{cobdate}/{feed}/submit",
+    headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
+    files=files,
+)
+print(response.status_code, response.text)</code></pre>
       </div>
     </div>
     
@@ -280,7 +285,7 @@ print("Access Token:", ACCESS_TOKEN)</code></pre>
       </div>
       <div id="results-curl" class="code-block">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X GET \
-"https://chemed-dev.rdanoteworthy.com/api/v1/reports/{cobdate}/{report}/updates" \
+  "https://chemed-dev.rdanoteworthy.com/api/v1/reports/{cobdate}/{report}/updates" \
   -H "Authorization: Bearer $ACCESS_TOKEN"</code></pre>
       </div>
       <div id="results-python" class="code-block" style="display:none;">
