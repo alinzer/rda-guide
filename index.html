@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -88,20 +89,75 @@
     .tab-group {
       margin-bottom: 1.5rem;
     }
+
+    /* ---------- NEW: Table styling ---------- */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    }
+    .spec-table th,
+    .spec-table td {
+      padding: 0.9rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .spec-table th {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    .spec-table tr:nth-child(even) td {
+      background: rgba(0,0,0,0.03);
+    }
+    .spec-table code {
+      background: rgba(0,0,0,0.1);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    @media (max-width: 600px) {
+      .spec-table thead { display: none; }
+      .spec-table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 6px;
+        padding: 0.5rem;
+      }
+      .spec-table td {
+        display: block;
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+        border: none;
+      }
+      .spec-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0.5rem;
+        width: 45%;
+        font-weight: 600;
+        text-align: left;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Theme</div>
-    <h1>📘 RDA Noteworthy API Guide</h1>
+    <div class="theme-toggle" onclick="toggleTheme()">Toggle Theme</div>
+    <h1>RDA Noteworthy API Guide</h1>
     <p>This guide shows how to authenticate, submit feeds, and retrieve results using the RDA Noteworthy API.</p>
-
     <hr />
 
-    <h2>1. 🔑 Authentication</h2>
-    <p>Use your <strong>Client ID</strong> and <strong>Client Secret</strong> to obtain an access token. This token must be included in the Authorziation header all subsequent API requests. 
-    </p>
-    
+    <!-- ==================== 1. Authentication ==================== -->
+    <h2>1. Authentication</h2>
+    <p>Use your <strong>Client ID</strong> and <strong>Client Secret</strong> to obtain an access token. This token must be included in the Authorization header for all subsequent API requests.</p>
+
     <div class="tab-group">
       <div class="tabs">
         <div class="tab active" data-target="auth-curl">curl</div>
@@ -110,24 +166,18 @@
       <div id="auth-curl" class="code-block">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">export CLIENT_ID="your_client_id"
 export CLIENT_SECRET="your_client_secret"
-
 ACCESS_TOKEN=$(curl -s -X POST https://chemed-dev.rdanoteworthy.com/api/v1/auth/token \
   -H "Authorization: Basic $(echo -n $CLIENT_ID:$CLIENT_SECRET | base64)" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=client_credentials" | jq -r '.access_token')
-
 echo "Access Token: $ACCESS_TOKEN"</code></pre>
       </div>
-
       <div id="auth-python" class="code-block" style="display:none;">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import base64
 import requests
-
 CLIENT_ID = "your_client_id"
 CLIENT_SECRET = "your_client_secret"
-
 auth_header = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
-
 response = requests.post(
     "https://chemed-dev.rdanoteworthy.com/api/v1/auth/token",
     headers={
@@ -136,50 +186,91 @@ response = requests.post(
     },
     data={"grant_type": "client_credentials"},
 )
-
 data = response.json()
 ACCESS_TOKEN = data["access_token"]
 print("Access Token:", ACCESS_TOKEN)</code></pre>
       </div>
     </div>
-
     <hr />
 
-    <h2>2. 📤 Submit a Feed</h2>
+    <!-- ==================== 2. Submit a Feed ==================== -->
+    <h2>2. Submit a Feed</h2>
     <p>Once you have an access token, submit a text file feed for processing.</p>
-
+    
     <div class="tab-group">
       <div class="tabs">
         <div class="tab active" data-target="submit-curl">curl</div>
         <div class="tab" data-target="submit-python">Python</div>
       </div>
-
       <div id="submit-curl" class="code-block">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X POST \
-  "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/{cobdate}/{feed}/submit" \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@notes.csv;type=text/csv"</code></pre>
+      "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/{cobdate}/{feed}/submit" \
+      -H "Authorization: Bearer $ACCESS_TOKEN" \
+      -H "Content-Type: multipart/form-data" \
+      -F "file=@notes.csv;type=text/csv"</code></pre>
       </div>
-
       <div id="submit-python" class="code-block" style="display:none;">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
-
-files = {"file": ("notes.csv", open("notes.csv", "rb"), "text/csv")}
-
-response = requests.post(
-    "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/{cobdate}/{feed}/submit",
-    headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
-    files=files,
-)
-
-print(response.status_code, response.text)</code></pre>
+    files = {"file": ("notes.csv", open("notes.csv", "rb"), "text/csv")}
+    response = requests.post(
+        "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/{cobdate}/{feed}/submit",
+        headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
+        files=files,
+    )
+    print(response.status_code, response.text)</code></pre>
       </div>
     </div>
-
+    
+    <!-- Compact spec table – sub‑header style -->
+    <h3 style="margin-top:1.2rem; color:var(--accent);">File Specification</h3>
+    <table class="spec-table compact">
+      <thead>
+        <tr>
+          <th>Column</th>
+          <th>Type</th>
+          <th>Example</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>encounter_id</code></td><td>text</td><td><code>12345ABC</code></td></tr>
+        <tr><td><code>encounter_dt</code></td><td>date</td><td><code>20250415</code></td></tr>
+        <tr><td><code>last_updated</code></td><td>timestamp</td><td><code>1743964800</code></td></tr>
+        <tr><td><code>note_input_1</code></td><td>text</td><td>any string</td></tr>
+        <tr><td><code>note_input_2</code></td><td>text</td><td>any string</td></tr>
+        <tr><td><code>note_input_3</code></td><td>text</td><td>any string</td></tr>
+      </tbody>
+    </table>
+    <h4 style="margin-top:1rem; color:var(--accent);">Validation Failure Examples</h4>
+    <table class="spec-table compact">
+      <thead>
+        <tr>
+          <th>Row #</th>
+          <th>Bad Data (excerpt)</th>
+          <th>Error Message</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><code>""|2025-04-15|1743964800|...</code></td>
+          <td><code>encounter_id is empty or null</code></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><code>ABC123|04152025|...</code></td>
+          <td><code>encounter_dt invalid format (must be yyyyMMdd)</code></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><code>XYZ789|20250415|abc123|...</code></td>
+          <td><code>last_updated invalid datatype (must be numeric epoch timestamp)</code></td>
+        </tr>
+      </tbody>
+</table>
     <hr />
 
-    <h2>3. 📅 Retrieve Reports</h2>
+    <!-- ==================== 3. Retrieve Reports ==================== -->
+    <h2>3. Retrieve Reports</h2>
     <p>Fetch reports for a specific cobdate.</p>
 
     <div class="tab-group">
@@ -187,29 +278,25 @@ print(response.status_code, response.text)</code></pre>
         <div class="tab active" data-target="results-curl">curl</div>
         <div class="tab" data-target="results-python">Python</div>
       </div>
-
       <div id="results-curl" class="code-block">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X GET \
 "https://chemed-dev.rdanoteworthy.com/api/v1/reports/{cobdate}/{report}/updates" \
   -H "Authorization: Bearer $ACCESS_TOKEN"</code></pre>
       </div>
-
       <div id="results-python" class="code-block" style="display:none;">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
-
 response = requests.get(
     "https://chemed-dev.rdanoteworthy.com/api/v1/reports/{cobdate}/{report}/updates",
     headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
 )
-
 print(response.status_code)
 print(response.text)</code></pre>
       </div>
     </div>
-
     <hr />
 
-    <h2>✅ Summary</h2>
+    <!-- ==================== Summary ==================== -->
+    <h2>Summary</h2>
     <ol>
       <li>Authenticate → Get your access token</li>
       <li>Submit → Upload your feed file</li>
@@ -218,10 +305,10 @@ print(response.text)</code></pre>
   </div>
 
   <script>
+    /* ---- Tab switching ---- */
     document.querySelectorAll(".tab-group").forEach(group => {
       const tabs = group.querySelectorAll(".tab");
       const blocks = group.querySelectorAll(".code-block");
-
       tabs.forEach(tab => {
         tab.addEventListener("click", () => {
           tabs.forEach(t => t.classList.remove("active"));
@@ -233,6 +320,7 @@ print(response.text)</code></pre>
       });
     });
 
+    /* ---- Copy button ---- */
     function copyCode(btn) {
       const code = btn.nextElementSibling.innerText;
       navigator.clipboard.writeText(code);
@@ -240,6 +328,7 @@ print(response.text)</code></pre>
       setTimeout(() => (btn.textContent = "Copy"), 1500);
     }
 
+    /* ---- Theme toggle ---- */
     function toggleTheme() {
       const html = document.documentElement;
       html.dataset.theme = html.dataset.theme === "dark" ? "light" : "dark";
