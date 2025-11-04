@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -98,8 +97,6 @@
 
     <h2>1. 🔑 Authentication</h2>
     <p>Use your <strong>Client ID</strong> and <strong>Client Secret</strong> to obtain an access token.</p>
-    <pre><code class="language-bash">export CLIENT_ID="your_client_id"
-export CLIENT_SECRET="your_client_secret"</code></pre>
 
     <div class="tabs">
       <div class="tab active" onclick="showTab(this, 'auth-curl')">curl</div>
@@ -107,7 +104,10 @@ export CLIENT_SECRET="your_client_secret"</code></pre>
     </div>
 
     <div id="auth-curl" class="code-block">
-      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">ACCESS_TOKEN=$(curl -s -X POST https://dev.rdanoteworthy.com/api/v1/auth/token \
+      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">export CLIENT_ID="your_client_id"
+export CLIENT_SECRET="your_client_secret"
+
+ACCESS_TOKEN=$(curl -s -X POST https://chemed-dev.rdanoteworthy.com/api/v1/auth/token \
   -H "Authorization: Basic $(echo -n $CLIENT_ID:$CLIENT_SECRET | base64)" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=client_credentials" | jq -r '.access_token')
@@ -125,7 +125,7 @@ CLIENT_SECRET = "your_client_secret"
 auth_header = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
 
 response = requests.post(
-    "https://dev.rdanoteworthy.com/api/v1/auth/token",
+    "https://chemed-dev.rdanoteworthy.com/api/v1/auth/token",
     headers={
         "Authorization": f"Basic {auth_header}",
         "Content-Type": "application/x-www-form-urlencoded",
@@ -150,21 +150,19 @@ print("Access Token:", ACCESS_TOKEN)</code></pre>
 
     <div id="submit-curl" class="code-block">
       <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X POST \
-  "https://dev.rdanoteworthy.com/api/v1/feeds/2/submit" \
+  "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/notes/submit" \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -H "Content-Type: multipart/form-data" \
-  -F "file=@notes.txt;type=text/plain"</code></pre>
+  -F "file=@notes.csv;type=text/csv"</code></pre>
     </div>
 
     <div id="submit-python" class="code-block" style="display:none;">
       <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
 
-ACCESS_TOKEN = "your_access_token_here"
-
-files = {"file": ("notes.txt", open("notes.txt", "rb"), "text/plain")}
+files = {"file": ("notes.txt", open("notes.csv", "rb"), "text/csv")}
 
 response = requests.post(
-    "https://dev.rdanoteworthy.com/api/v1/feeds/2/submit",
+    "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/notes/submit",
     headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
     files=files,
 )
@@ -183,7 +181,8 @@ print(response.status_code, response.text)</code></pre>
     </div>
 
     <div id="results-curl" class="code-block">
-      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X GET "https://dev.rdanoteworthy.com/api/v1/note-reviews/updates/25" \
+      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X GET \
+"https://chemed-dev.rdanoteworthy.com/api/v1/note-reviews/updates/25" \
   -H "Authorization: Bearer $ACCESS_TOKEN"</code></pre>
     </div>
 
@@ -193,7 +192,7 @@ print(response.status_code, response.text)</code></pre>
 ACCESS_TOKEN = "your_access_token_here"
 
 response = requests.get(
-    "https://dev.rdanoteworthy.com/api/v1/note-reviews/updates/25",
+    "https://chemed-dev.rdanoteworthy.com/api/v1/note-reviews/updates/25",
     headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
 )
 
