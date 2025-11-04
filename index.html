@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RDA Noteworthy API Guide</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      transition: background 0.3s, color 0.3s;
+    }
+    :root {
+      --bg: #ffffff;
+      --fg: #222222;
+      --card-bg: #f9f9f9;
+      --accent: #0078d4;
+    }
+    [data-theme="dark"] {
+      --bg: #1e1e1e;
+      --fg: #eaeaea;
+      --card-bg: #2a2a2a;
+      --accent: #4fc3f7;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 2rem;
+    }
+    h1, h2 {
+      color: var(--accent);
+    }
+    pre {
+      position: relative;
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 1rem;
+      overflow-x: auto;
+    }
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .tab {
+      cursor: pointer;
+      background: var(--card-bg);
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      transition: 0.2s;
+    }
+    .tab.active {
+      background: var(--accent);
+      color: white;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.6rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .theme-toggle {
+      float: right;
+      cursor: pointer;
+      background: var(--card-bg);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      margin-top: -3rem;
+    }
+    hr {
+      margin: 2rem 0;
+      border: none;
+      border-top: 1px solid #4443;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Theme</div>
+    <h1>📘 RDA Noteworthy API Guide</h1>
+    <p>This guide shows how to authenticate, submit feeds, and retrieve results using the RDA Noteworthy API.</p>
+
+    <hr />
+
+    <h2>1. 🔑 Authentication</h2>
+    <p>Use your <strong>Client ID</strong> and <strong>Client Secret</strong> to obtain an access token.</p>
+    <pre><code class="language-bash">export CLIENT_ID="your_client_id"
+export CLIENT_SECRET="your_client_secret"</code></pre>
+
+    <div class="tabs">
+      <div class="tab active" onclick="showTab(this, 'auth-curl')">curl</div>
+      <div class="tab" onclick="showTab(this, 'auth-python')">Python</div>
+    </div>
+
+    <div id="auth-curl" class="code-block">
+      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">ACCESS_TOKEN=$(curl -s -X POST https://dev.rdanoteworthy.com/api/v1/auth/token \
+  -H "Authorization: Basic $(echo -n $CLIENT_ID:$CLIENT_SECRET | base64)" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials" | jq -r '.access_token')
+
+echo "Access Token: $ACCESS_TOKEN"</code></pre>
+    </div>
+
+    <div id="auth-python" class="code-block" style="display:none;">
+      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import base64
+import requests
+
+CLIENT_ID = "your_client_id"
+CLIENT_SECRET = "your_client_secret"
+
+auth_header = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
+
+response = requests.post(
+    "https://dev.rdanoteworthy.com/api/v1/auth/token",
+    headers={
+        "Authorization": f"Basic {auth_header}",
+        "Content-Type": "application/x-www-form-urlencoded",
+    },
+    data={"grant_type": "client_credentials"},
+)
+
+data = response.json()
+ACCESS_TOKEN = data["access_token"]
+print("Access Token:", ACCESS_TOKEN)</code></pre>
+    </div>
+
+    <hr />
+
+    <h2>2. 📤 Submit a Feed</h2>
+    <p>Once you have an access token, submit a text file feed for processing.</p>
+
+    <div class="tabs">
+      <div class="tab active" onclick="showTab(this, 'submit-curl')">curl</div>
+      <div class="tab" onclick="showTab(this, 'submit-python')">Python</div>
+    </div>
+
+    <div id="submit-curl" class="code-block">
+      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X POST \
+  "https://dev.rdanoteworthy.com/api/v1/feeds/2/submit" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@notes.txt;type=text/plain"</code></pre>
+    </div>
+
+    <div id="submit-python" class="code-block" style="display:none;">
+      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
+
+ACCESS_TOKEN = "your_access_token_here"
+
+files = {"file": ("notes.txt", open("notes.txt", "rb"), "text/plain")}
+
+response = requests.post(
+    "https://dev.rdanoteworthy.com/api/v1/feeds/2/submit",
+    headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
+    files=files,
+)
+
+print(response.status_code, response.text)</code></pre>
+    </div>
+
+    <hr />
+
+    <h2>3. 📅 Retrieve Results</h2>
+    <p>Fetch results for a specific date using the <code>/note-reviews/updates/{date_id}</code> endpoint.</p>
+
+    <div class="tabs">
+      <div class="tab active" onclick="showTab(this, 'results-curl')">curl</div>
+      <div class="tab" onclick="showTab(this, 'results-python')">Python</div>
+    </div>
+
+    <div id="results-curl" class="code-block">
+      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X GET "https://dev.rdanoteworthy.com/api/v1/note-reviews/updates/25" \
+  -H "Authorization: Bearer $ACCESS_TOKEN"</code></pre>
+    </div>
+
+    <div id="results-python" class="code-block" style="display:none;">
+      <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
+
+ACCESS_TOKEN = "your_access_token_here"
+
+response = requests.get(
+    "https://dev.rdanoteworthy.com/api/v1/note-reviews/updates/25",
+    headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
+)
+
+print(response.status_code)
+print(response.json())</code></pre>
+    </div>
+
+    <hr />
+
+    <h2>✅ Summary</h2>
+    <ol>
+      <li>Authenticate → Get your access token</li>
+      <li>Submit → Upload your feed file</li>
+      <li>Retrieve → Fetch your processed results</li>
+    </ol>
+  </div>
+
+  <script>
+    function showTab(tab, id) {
+      const parent = tab.parentElement.nextElementSibling.parentElement;
+      const allTabs = parent.querySelectorAll('.tab');
+      const allBlocks = parent.querySelectorAll('.code-block');
+      allTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      allBlocks.forEach(b => b.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+
+    function copyCode(btn) {
+      const code = btn.nextElementSibling.innerText;
+      navigator.clipboard.writeText(code);
+      btn.textContent = "Copied!";
+      setTimeout(() => btn.textContent = "Copy", 1500);
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.dataset.theme = html.dataset.theme === "dark" ? "light" : "dark";
+    }
+  </script>
+</body>
+</html>
