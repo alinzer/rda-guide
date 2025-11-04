@@ -99,7 +99,8 @@
     <hr />
 
     <h2>1. 🔑 Authentication</h2>
-    <p>Use your <strong>Client ID</strong> and <strong>Client Secret</strong> to obtain an access token.</p>
+    <p>Use your <strong>Client ID</strong> and <strong>Client Secret</strong> to obtain an access token. This token must be included in the Authorziation header all subsequent API requests. 
+    </p>
     
     <div class="tab-group">
       <div class="tabs">
@@ -155,7 +156,7 @@ print("Access Token:", ACCESS_TOKEN)</code></pre>
 
       <div id="submit-curl" class="code-block">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X POST \
-  "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/notes/submit" \
+  "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/{cobdate}/{feed}/submit" \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@notes.csv;type=text/csv"</code></pre>
@@ -167,7 +168,7 @@ print("Access Token:", ACCESS_TOKEN)</code></pre>
 files = {"file": ("notes.csv", open("notes.csv", "rb"), "text/csv")}
 
 response = requests.post(
-    "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/notes/submit",
+    "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/{cobdate}/{feed}/submit",
     headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
     files=files,
 )
@@ -178,8 +179,8 @@ print(response.status_code, response.text)</code></pre>
 
     <hr />
 
-    <h2>3. 📅 Retrieve Results</h2>
-    <p>Fetch results for a specific date using the <code>/note-reviews/updates/{date_id}</code> endpoint.</p>
+    <h2>3. 📅 Retrieve Reports</h2>
+    <p>Fetch reports for a specific cobdate.</p>
 
     <div class="tab-group">
       <div class="tabs">
@@ -189,7 +190,7 @@ print(response.status_code, response.text)</code></pre>
 
       <div id="results-curl" class="code-block">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X GET \
-"https://chemed-dev.rdanoteworthy.com/api/v1/note-reviews/updates/25" \
+"https://chemed-dev.rdanoteworthy.com/api/v1/reports/{cobdate}/{report}/updates" \
   -H "Authorization: Bearer $ACCESS_TOKEN"</code></pre>
       </div>
 
@@ -197,7 +198,7 @@ print(response.status_code, response.text)</code></pre>
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
 
 response = requests.get(
-    "https://chemed-dev.rdanoteworthy.com/api/v1/note-reviews/updates/25",
+    "https://chemed-dev.rdanoteworthy.com/api/v1/reports/{cobdate}/{report}/updates",
     headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
 )
 
