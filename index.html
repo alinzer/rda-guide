@@ -242,6 +242,21 @@ print(response.status_code, response.text)</code></pre>
       </div>
     </div>
     
+    <h3 style="margin-top:1.2rem; color:var(--accent);">Request Inputs</h3>
+    <table class="spec-table compact">
+      <thead>
+        <tr>
+          <th>Column</th>
+          <th>Explanation</th>
+          <th>Example</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>cobdate</code></td><td>date in yyyyMMdd format</td><td><code>20251025</code></td></tr>
+        <tr><td><code>feed</code></td><td>type of feed that is being submitted</td><td><code>notes</code></td></tr>
+      </tbody>
+    </table>
+    
     <!-- Compact spec table – sub‑header style -->
     <h3 style="margin-top:1.2rem; color:var(--accent);">File Specification</h3>
     <table class="spec-table compact">
@@ -253,7 +268,7 @@ print(response.status_code, response.text)</code></pre>
         </tr>
       </thead>
       <tbody>
-        <tr><td><code>encounter_id</code></td><td>text</td><td><code>12345ABC</code></td></tr>
+        <tr><td><code>encounter_id</code></td><td>integer</td><td><code>25351</code></td></tr>
         <tr><td><code>encounter_dt</code></td><td>date</td><td><code>20250415</code></td></tr>
         <tr><td><code>last_updated</code></td><td>timestamp</td><td><code>1743964800</code></td></tr>
         <tr><td><code>note_input_1</code></td><td>text</td><td>any string</td></tr>
@@ -261,100 +276,6 @@ print(response.status_code, response.text)</code></pre>
         <tr><td><code>note_input_3</code></td><td>text</td><td>any string</td></tr>
       </tbody>
     </table>
-    
-    <h3 style="margin-top:1.2rem; color:var(--accent);">Error Messages</h3>
-    <div class="error-examples" style="margin-top:1rem;">
-  <h4 style="color:var(--accent); margin-bottom:0.6rem;">Example Error Responses</h4>
-
-  <p><strong>1. Missing or empty required values</strong></p>
-  <pre><code class="language-json">{
-  "status": "error",
-  "message": "Validation failed",
-  "errors": [
-    {
-      "row": 12,
-      "column": "encounter_id",
-      "code": "MISSING_VALUE",
-      "detail": "encounter_id is required but missing"
-    }
-  ]
-}</code></pre>
-
-  <p><strong>2. Incorrect date format (must be YYYYMMDD)</strong></p>
-  <pre><code class="language-json">{
-  "status": "error",
-  "message": "Validation failed",
-  "errors": [
-    {
-      "row": 27,
-      "column": "encounter_dt",
-      "code": "INVALID_FORMAT",
-      "detail": "encounter_dt must be in YYYYMMDD format"
-    }
-  ]
-}</code></pre>
-
-  <p><strong>3. Invalid epoch timestamp</strong></p>
-  <pre><code class="language-json">{
-  "status": "error",
-  "message": "Validation failed",
-  "errors": [
-    {
-      "row": 8,
-      "column": "last_updated",
-      "code": "INVALID_TYPE",
-      "detail": "last_updated must be numeric epoch timestamp"
-    }
-  ]
-}</code></pre>
-
-  <p><strong>4. Timestamp too early (invalid)</strong></p>
-  <pre><code class="language-json">{
-  "status": "error",
-  "message": "Validation failed",
-  "errors": [
-    {
-      "row": 3,
-      "column": "last_updated",
-      "code": "INVALID_VALUE",
-      "detail": "last_updated must be epoch timestamp &gt;= 2000-01-01"
-    }
-  ]
-}</code></pre>
-
-  <p><strong>5. Multiple errors in the same row</strong></p>
-  <pre><code class="language-json">{
-  "status": "error",
-  "message": "Validation failed",
-  "errors": [
-    {
-      "row": 14,
-      "column": "encounter_id",
-      "code": "MISSING_VALUE",
-      "detail": "encounter_id is required but missing"
-    },
-    {
-      "row": 14,
-      "column": "encounter_dt",
-      "code": "INVALID_FORMAT",
-      "detail": "encounter_dt must be in YYYYMMDD format"
-    }
-  ]
-}</code></pre>
-
-  <p><strong>6. Invalid CSV structure (wrong number of columns)</strong></p>
-  <pre><code class="language-json">{
-  "status": "error",
-  "message": "Invalid file format",
-  "detail": "File parsing failed: Expected 6 fields, saw 7"
-}</code></pre>
-
-  <p><strong>7. Missing required columns (structural error)</strong></p>
-  <pre><code class="language-json">{
-  "status": "error",
-  "message": "Missing expected columns in file: ['encounter_dt', 'note_input_2']"
-}</code></pre>
-</div>
 
     <hr />
 
