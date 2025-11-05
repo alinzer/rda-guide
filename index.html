@@ -215,7 +215,7 @@ print("Access Token:", ACCESS_TOKEN)</code></pre>
 
     <!-- ==================== 2. Submit a Feed ==================== -->
     <h2>2. Submit a Feed</h2>
-    <p>Once you have an access token, submit a text file feed for processing.</p>
+    <p>Once you have an access token, submit a text file feed for processing. Currently, only the notes feed is implemented.</p>
     
     <div class="tab-group">
       <div class="tabs">
@@ -223,8 +223,11 @@ print("Access Token:", ACCESS_TOKEN)</code></pre>
         <div class="tab" data-target="submit-python">Python</div>
       </div>
       <div id="submit-curl" class="code-block">
-        <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X POST \
-  "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/{cobdate}/{feed}/submit" \
+        <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">export COBDATE="20251105"
+export FEED="notes"
+
+curl -X POST \
+  "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/$COBDATE/$FEED/submit" \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@notes.csv;type=text/csv"</code></pre>
@@ -233,6 +236,9 @@ print("Access Token:", ACCESS_TOKEN)</code></pre>
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
         
 files = {"file": ("notes.csv", open("notes.csv", "rb"), "text/csv")}
+cobdate = 20251105
+feed = "notes"
+
 response = requests.post(
     "https://chemed-dev.rdanoteworthy.com/api/v1/feeds/{cobdate}/{feed}/submit",
     headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
@@ -253,7 +259,7 @@ print(response.status_code, response.text)</code></pre>
       </thead>
       <tbody>
         <tr><td><code>cobdate</code></td><td>date in yyyyMMdd format</td><td><code>20251025</code></td></tr>
-        <tr><td><code>feed</code></td><td>type of feed that is being submitted</td><td><code>notes</code></td></tr>
+        <tr><td><code>feed</code></td><td>name of feed that is being submitted</td><td><code>notes</code></td></tr>
       </tbody>
     </table>
     
@@ -280,8 +286,8 @@ print(response.status_code, response.text)</code></pre>
     <hr />
 
     <!-- ==================== 3. Retrieve Reports ==================== -->
-    <h2>3. Retrieve Reports</h2>
-    <p>Fetch reports for a specific cobdate.</p>
+    <h2>3. Download Daily Updates</h2>
+    <p>Retrieve the processed report for a given date. This includes all new and updated records from relevant feed(s) submitted on that date. Historical data from prior dates is not included. Currently, only the note-review report is implemented.</p>
 
     <div class="tab-group">
       <div class="tabs">
@@ -289,20 +295,40 @@ print(response.status_code, response.text)</code></pre>
         <div class="tab" data-target="results-python">Python</div>
       </div>
       <div id="results-curl" class="code-block">
-        <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">curl -X GET \
-  "https://chemed-dev.rdanoteworthy.com/api/v1/reports/{cobdate}/{report}/updates" \
+        <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-bash">export COBDATE="20251105"
+export REPORT="note-review"
+
+curl -X GET \
+  "https://chemed-dev.rdanoteworthy.com/api/v1/downloads/$REPORT/$COBDATE/delta" \
   -H "Authorization: Bearer $ACCESS_TOKEN"</code></pre>
       </div>
       <div id="results-python" class="code-block" style="display:none;">
         <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="language-python">import requests
+
+cobdate = 20251105
+report = "note-review"
 response = requests.get(
-    "https://chemed-dev.rdanoteworthy.com/api/v1/reports/{cobdate}/{report}/updates",
+    "https://chemed-dev.rdanoteworthy.com/api/v1/downloads/{report}/{cobdate}/delta",
     headers={"Authorization": f"Bearer {ACCESS_TOKEN}"},
 )
 print(response.status_code)
 print(response.text)</code></pre>
       </div>
     </div>
+    <h3 style="margin-top:1.2rem; color:var(--accent);">Request Inputs</h3>
+    <table class="spec-table compact">
+      <thead>
+        <tr>
+          <th>Column</th>
+          <th>Explanation</th>
+          <th>Example</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>cobdate</code></td><td>date in yyyyMMdd format</td><td><code>20251025</code></td></tr>
+        <tr><td><code>report</code></td><td>name of report that is being requested</td><td><code>note-review</code></td></tr>
+      </tbody>
+    </table>
     <hr />
 
     <!-- ==================== Summary ==================== -->
